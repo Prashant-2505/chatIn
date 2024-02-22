@@ -1,24 +1,21 @@
 const dotenv = require('dotenv');
 const express = require('express');
+const connectDB = require('./config/db')
+const userRoutes = require('./routes/userRoutes')
+
 
 const app = express()
 dotenv.config()
+connectDB()
 
-
+app.use(express.json())
 
 
 app.get('/', (req, res) => {
     res.send("api is running" )
 })
 
-app.get('/api/chat', (req, res) => {
-    console.log("all chats")
-})
-
-app.get('/api/chat/:id', (req, res) => {
-    console.log(req)
-})
-
+app.use('/api/user',userRoutes)
 
 
 
