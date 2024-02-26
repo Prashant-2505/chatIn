@@ -38,7 +38,6 @@ const registerUser = asyncHandler(async (req, res) => {
 
 const authUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body
-
     const existingUser = await User.findOne({ email })
     if (existingUser && (await existingUser.matchPassword(password))) {
         res.json({
@@ -55,4 +54,24 @@ const authUser = asyncHandler(async (req, res) => {
     }
 })
 
-module.exports = { registerUser, authUser };
+// /api/user?search=tom
+const allUsers = asyncHandler(async (req, res) => {
+    const keyword = req.query.search;
+
+    let query = {};
+
+    if (keyword) {
+        query = {
+            $or: [
+                { name: { $regex: keyword, $options: "i" } },
+                { email: { $regex: keyword, $options: "i" } }
+            ]
+        };
+    }
+
+    const users = await User.find(query).find({_id: {$ne : req.user._id}})
+    res.send(users);
+});
+
+
+module.exports = { registerUser, authUser, allUsers };
